@@ -1,0 +1,110 @@
+<script>
+  // Toggle visibility of Edit Block
+     const formId="myForm";
+  function toggle_visibility(id) {
+       var e = document.getElementById(id);
+       if(e.style.display == 'block')
+          e.style.display = 'none';
+       else
+          e.style.display = 'block';
+   }
+  // Prevent forms from submitting.
+  function preventFormSubmit() {
+    var forms = document.querySelectorAll('form');
+    for (var i = 0; i < forms.length; i++) {
+      forms[i].addEventListener('submit', function(event) {
+      event.preventDefault();
+      });
+    }
+  }
+  window.addEventListener("load", functionInit, true); 
+   
+  //INITIALIZE FUNCTIONS ONLOAD
+  function functionInit(){  
+    preventFormSubmit();
+    getLastTenRows();
+  };      
+   
+  //HANDLE FORM SUBMISSION
+  function handleFormSubmit(formObject) {
+    google.script.run.withSuccessHandler(createTable).processForm(formObject);
+    document.getElementById("myForm").reset();
+  }
+   
+  //GET LAST 10 ROWS
+  function getLastTenRows (){
+   google.script.run.withSuccessHandler(createTable).getLastTenRows();
+  }
+   
+   
+  //GET ALL DATA
+  function getAllData(){
+    //document.getElementById('dataTable').innerHTML = "";
+    google.script.run.withSuccessHandler(createTable).getAllData();
+  }
+   
+ 
+  //CREATE THE DATA TABLE
+  function createTable(dataArray) {
+   
+    if(dataArray){
+      console.log(dataArray);
+      var result = "<table class='table table-md' style='font-size:0.8em; text-align: center'>"+
+                   "<thead style='white-space: nowrap'>"+
+                     "<tr>"+                               //Change table headings to match witht he Google Sheet
+                      "<th scope='col'>Delete</th>"+
+                      "<th scope='col'>Edit</th>"+
+                      "<th scope='col'>ID</th>"+
+                      "<th scope='col'>Item Name</th>"+
+                      "<th scope='col'>Max Container Capacity(in kg)</th>"+
+                      "<th scope='col'>Price(in ₹)</th>"+
+                      "<th scope='col'>Weight of Content using Sensors(in kg)</th>"+
+                      "<th scope='col'>Status</th>"+
+                    "</tr>"+
+                  "</thead>";
+      for(var i=0; i<dataArray.length; i++) {
+          result += "<tr>";
+          result += "<td><button type='button' class='btn btn-danger btn-xs deleteBtn' onclick='deleteData(this);'>Delete</button></td>";
+          result += "<td><button type='button' class='btn btn-warning btn-xs editBtn' onclick='editData(this);toggle_visibility(formId);'>Edit</button></td>";
+          for(var j=0; j<dataArray[i].length; j++){
+              result += "<td>"+dataArray[i][j]+"</td>";
+          }
+          result += "</tr>";
+      }
+      result += "</table>";
+      var div = document.getElementById('dataTable');
+      div.innerHTML = result;
+      document.getElementById("message").innerHTML = "";
+    }else{
+      var div = document.getElementById('dataTable');
+      div.innerHTML = "Data not found!";
+    }
+  }
+ 
+  //DELETE DATA
+  function deleteData(el) {
+    var result = confirm("Want to delete?");
+    if (result) {
+      var recordId = el.parentNode.parentNode.cells[2].innerHTML;
+      google.script.run.withSuccessHandler(createTable).deleteData(recordId);
+    }
+  }
+   
+   
+  //EDIT DATA
+  function editData(el){
+    var recordId = el.parentNode.parentNode.cells[2].innerHTML; //https://stackoverflow.com/a/32377357/2391195
+    google.script.run.withSuccessHandler(populateForm).getRecordById(recordId);
+  }
+ 
+  //POPULATE FORM
+  function populateForm(records){
+    document.getElementById('RecId').value = records[0][0];
+    document.getElementById('name').value = records[0][1];
+    document.getElementById('weight').value = records[0][2];
+    document.getElementById('price').value = records[0][3];
+    document.getElementById("message").innerHTML = "<div class='alert alert-warning' role='alert'>Update Record [ID: "+records[0][0]+"]</div>";
+  }
+   
+
+</script>

@@ -1,0 +1,27 @@
+<!-- ## The html code of the form goes here -->
+<!-- ## This is included in the Index.html page using "include('Form')" function -->
+
+<form style="display:none;" id="myForm" class="p-2 border border-light rounded bg-light" onsubmit="handleFormSubmit(this)"> <!-- Call JavaScript function "handleFormSubmit" -->
+    <p class="h4 mb-4 text-center">Edit Inventory Item</p>
+    <div id="message"></div>
+    <input type="text" id="RecId" name="RecId" value="" style="display: none">
+
+    <div class="form-group">
+      <label for="name" >Item Name</label>
+      <input type="text" class="form-control" id="name" name="name" placeholder="Enter your item name" required>
+    </div>
+    <div class="form-group">
+      <label for="weight" >Weight of Container</label>
+      <input type="text" class="form-control" id="weight" name="weight" placeholder="(in kg)" required>
+    </div>
+    <div class="form-group">
+      <label for="price" >Price</label>
+      <input type="text" class="form-control" id="price" name="price" placeholder="(in ₹)" required>
+    </div>
+
+  <button type="submit" onclick="toggle_visibility('myForm');" class="btn btn-primary">Submit</button>
+    <input class="btn btn-secondary" type="reset" value="Reset">
+</form>
+
+
+
